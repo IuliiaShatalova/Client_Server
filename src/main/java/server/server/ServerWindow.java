@@ -2,6 +2,7 @@ package server.server;
 
 import server.client.ClientGUI;
 
+import javax.imageio.IIOException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -17,10 +18,13 @@ public class ServerWindow extends JFrame {
 
     private final  JButton btnStart = new JButton("Start");
     private final  JButton btnStop = new JButton("Stop");
+
     private final JTextArea log = new JTextArea();
-    public static boolean isServerWorking;
+    public boolean isServerWorking;
+
     List<ClientGUI> accountsList = new ArrayList<>();
     StringBuilder messageHistory;
+    FileHandler fh = new FileHandler();
 
 
     public ServerWindow(){
@@ -45,6 +49,7 @@ public class ServerWindow extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 isServerWorking = true;
                 log.append("Server started " + isServerWorking + "\n");
+                messageHistory = new StringBuilder();
                 messageHistory = FileHandler.read();
             }
         });
@@ -61,5 +66,34 @@ public class ServerWindow extends JFrame {
 
     public void serverMessage(String s) {
         log.append(s);
+    }
+
+    public int getServerStatus() {
+        if (!isServerWorking) {
+            return 0;
+        }
+        else return 1;
+    }
+
+    public StringBuilder loadChat() {
+        return messageHistory;
+    }
+
+    public void showMessageInChat(String s) {
+        try {
+            fh.save(s);
+        } catch (IIOException e) {
+            log.append(e.getMessage());
+        }
+        messageHistory.append(s).append("\n");
+        log.append(s);
+        log.append("\n");
+        for (ClientGUI client : accountsList) {
+            client.receiveMessage(s);
+        }
+    }
+
+    public void addToOnline(ClientGUI client) {
+        accountsList.add(client);
     }
 }
