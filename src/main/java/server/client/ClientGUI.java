@@ -22,18 +22,21 @@ public class ClientGUI extends JFrame {
     private JButton btnLogin;
     private String login;
 
+    private JTextArea chat;
     private JPanel chatPanel;
     private JPanel panelBottom;
     private JTextField tfMessage;
     private JButton btnSend;
 
     public ClientGUI(ServerWindow serverWindow){
+        this.serverWindow = serverWindow;
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setSize(WIDTH, HEIGHT);
         setTitle("Chat Client");
 
         startLoginWindow(serverWindow);
+        serverWindow.addToOnline(this);
 
         log.setEnabled(false);
         JScrollPane scrollLog = new JScrollPane(log);
@@ -60,7 +63,7 @@ public class ClientGUI extends JFrame {
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!ServerWindow.isServerWorking) {
+                if (serverWindow.getServerStatus() == 0) {
                     throw new RuntimeException();
                 }
                 else {
@@ -76,15 +79,40 @@ public class ClientGUI extends JFrame {
     }
 
     private void startChatWindow(){
-        chatPanel = new JPanel(new BorderLayout(5, 0));
+        chatPanel = new JPanel(new BorderLayout(5,0));
+        chat = new JTextArea();
+        chatPanel.add(chat);
+
         panelBottom = new JPanel(new BorderLayout());
         tfMessage = new JTextField();
         btnSend = new JButton("Send");
 
         panelBottom.add(tfMessage, BorderLayout.CENTER);
         panelBottom.add(btnSend, BorderLayout.EAST);
+
         add(panelBottom, BorderLayout.SOUTH);
+        add(chatPanel, BorderLayout.NORTH);
+
+        chat.append("Successful connection " + "\n");
+        chat.append(serverWindow.loadChat().toString());
+
+        btnSend.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String message = tfMessage.getText();
+                if (!message.isEmpty()) {
+                    sendMessage(message);
+                    tfMessage.setText("");
+                }
+            }
+        });
     }
 
+    private void sendMessage(String m) {
+        serverWindow.showMessageInChat(login + "\n" + m);
+    }
 
+    public void receiveMessage(String m) {
+        chat.append(m + "\n");
+    }
 }
