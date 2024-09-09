@@ -11,7 +11,8 @@ public class ClientGUI extends JFrame {
     private static final int WIDTH = 400;
     private static final int HEIGHT = 300;
 
-    private final JTextArea log = new JTextArea();
+    private JTextArea log = new JTextArea();
+    private ServerWindow serverWindow;
 
     private JPanel panelTop;
     private JTextField tfIPAddress;
@@ -64,7 +65,7 @@ public class ClientGUI extends JFrame {
                 }
                 else {
                     login = tfLogin.getText();
-                    ServerWindow.serverMessage(login + "is connected");
+                    serverWindow.serverMessage(login + " is connected" + "\n");
                     remove(panelTop);
                     startChatWindow();
                     revalidate();

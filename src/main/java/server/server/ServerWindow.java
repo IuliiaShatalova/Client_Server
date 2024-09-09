@@ -59,4 +59,7 @@ public class ServerWindow extends JFrame {
         setVisible(true);
     }
 
+    public void serverMessage(String s) {
+        log.append(s);
+    }
 }
