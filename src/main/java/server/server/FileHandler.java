@@ -1,5 +1,6 @@
 package server.server;
 
+import javax.imageio.IIOException;
 import java.io.FileReader;
 import java.io.*;
 
@@ -17,28 +18,15 @@ public class FileHandler {
         } catch (Exception e) {
             System.err.println(e);
         }
-
         return chatLog;
     }
 
-
-//    public void writeToFile(Message message) {
-//        String path = "src/main/resources/log.txt";
-//        Path file = Paths.get(path);
-//        if (Files.exists(file)) {
-//            try (FileWriter writer = new FileWriter(path, true)) {
-//                writer.append(message.getAuthorMessage()).append(";")
-//                        .append(message.getTextMessage()).append(";")
-//                        .append(message.getDateMessage())
-//                        .append("\n");
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        } else {
-//            new File(path);
-//            writeToFile(message);
-//        }
-//    }
-
-
+    public void save(String message) throws IIOException {
+        try (FileWriter fw = new FileWriter(messages, true)){
+            fw.write(message + "\n");
+            fw.flush();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+    }
 }
